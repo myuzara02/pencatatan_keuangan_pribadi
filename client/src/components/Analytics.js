@@ -1,6 +1,7 @@
 import { Progress } from "antd";
 import React from "react";
 import "../resources/analytics.css";
+
 function Analytics({ transactions, type }) {
   const totalTransactions = transactions.length;
   const totalIncomeTransactions = transactions.filter(
@@ -13,6 +14,23 @@ function Analytics({ transactions, type }) {
     (totalIncomeTransactions.length / totalTransactions) * 100;
   const totalExpenseTransactionsPercentage =
     (totalExpenseTransactions.length / totalTransactions) * 100;
+
+
+
+  const totalNetIncome = transactions.reduce(
+    (acc, transaction) =>
+      acc + (transaction.type === "income" ? transaction.amount : 0),
+    0
+  );
+  const totalNetExpense = transactions.reduce(
+    (acc, transaction) =>
+      acc + (transaction.type === "expense" ? transaction.amount : 0),
+    0
+  );
+  const totalNetIncomePercentage = (totalNetIncome / totalNetExpense) * 100;
+  const totalNetExpensePercentage = (totalNetExpense / totalNetIncome) * 100;
+
+
 
   const totalTurnover = transactions.reduce(
     (acc, transaction) => acc + transaction.amount,
@@ -88,23 +106,24 @@ function Analytics({ transactions, type }) {
                 className="mx-5"
                 strokeColor="#5DD64F"
                 type="circle"
-                percent={totalIncomeTransactionsPercentage.toFixed(0)}
+                percent={isNaN(totalIncomeTransactionsPercentage) ? 0 : totalIncomeTransactionsPercentage.toFixed(0)}
               />
               <Progress
                 strokeColor="#E5572F"
                 type="circle"
-                percent={totalExpenseTransactionsPercentage.toFixed(0)}
+                percent={isNaN(totalExpenseTransactionsPercentage) ? 0 : totalExpenseTransactionsPercentage.toFixed(0)}
               />
             </div>
+
           </div>
         </div>
 
         <div className="col-md-4 mt-3">
           <div className="transactions-count">
-            <h4>Total Turnover : {totalTurnover}</h4>
+            <h4>Total Net : {totalNetIncome - totalNetExpense}</h4>
             <hr />
-            <h5>Income : {totalIncomeTurnover}</h5>
-            <h5>Expense : {totalExpenseTurnover}</h5>
+            <h5>Income : {totalNetIncome}</h5>
+            <h5>Expense : {totalNetExpense}</h5>
 
             <div className="progress-bars">
               <Progress
@@ -121,6 +140,8 @@ function Analytics({ transactions, type }) {
             </div>
           </div>
         </div>
+
+
       </div>
       <hr />
       <div className="row">

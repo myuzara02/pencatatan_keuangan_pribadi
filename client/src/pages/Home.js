@@ -11,6 +11,7 @@ import {
   EditOutlined,
   DeleteOutlined,
 } from "@ant-design/icons";
+import { Button, Modal } from 'antd';
 import moment from "moment";
 import Analytics from "../components/Analytics";
 const { RangePicker } = DatePicker;
@@ -46,20 +47,52 @@ function Home() {
     }
   };
 
+  // const deleteTransaction = async (record) => {
+  //   try {
+  //     setLoading(true);
+  //     await axios.post("/api/transactions/delete-transaction", {
+  //       transactionId: record._id,
+  //     });
+  //     message.success("Transaction Deleted successfully");
+  //     getTransactions();
+  //     setLoading(false);
+  //   } catch (error) {
+  //     setLoading(false);
+  //     message.error("Something went wrong");
+  //   }
+  // };
+
   const deleteTransaction = async (record) => {
     try {
-      setLoading(true);
-      await axios.post("/api/transactions/delete-transaction", {
-        transactionId: record._id,
+      Modal.confirm({
+        title: 'Confirmation',
+        content: 'Are you sure you want to delete this transaction?',
+        okText: 'Yes',
+        cancelText: 'No',
+        okButtonProps: { style: { backgroundColor: '#1b7e14' } }, // Set the button color
+        cancelButtonProps: { style: { borderColor: '#1b7e14' } }, // Set the button color
+        onOk: async () => {
+          try {
+            setLoading(true);
+            await axios.post("/api/transactions/delete-transaction", {
+              transactionId: record._id,
+            });
+            message.success("Transaction deleted successfully");
+            getTransactions();
+          } catch (error) {
+            message.error("Something went wrong");
+          } finally {
+            setLoading(false);
+          }
+        },
       });
-      message.success("Transaction Deleted successfully");
-      getTransactions();
-      setLoading(false);
     } catch (error) {
       setLoading(false);
       message.error("Something went wrong");
     }
   };
+
+
 
   useEffect(() => {
     getTransactions();
@@ -109,7 +142,7 @@ function Home() {
     },
   ];
 
-  const getPaginationConfiguration = (pageSize) => transactionsData.length > pageSize ? {pageSize} : false
+  const getPaginationConfiguration = (pageSize) => transactionsData.length > pageSize ? { pageSize } : false
 
   return (
     <DefaultLayout>
@@ -148,16 +181,14 @@ function Home() {
           <div>
             <div className="view-switch mx-5">
               <UnorderedListOutlined
-                className={`mx-3 ${
-                  viewType === "table" ? "active-icon" : "inactive-icon"
-                } `}
+                className={`mx-3 ${viewType === "table" ? "active-icon" : "inactive-icon"
+                  } `}
                 onClick={() => setViewType("table")}
                 size={30}
               />
               <AreaChartOutlined
-                className={`${
-                  viewType === "analytics" ? "active-icon" : "inactive-icon"
-                } `}
+                className={`${viewType === "analytics" ? "active-icon" : "inactive-icon"
+                  } `}
                 onClick={() => setViewType("analytics")}
                 size={30}
               />
@@ -175,10 +206,10 @@ function Home() {
       <div className="table-analtics">
         {viewType === "table" ? (
           <div className="table">
-            <Table columns={columns} dataSource={transactionsData} pagination={getPaginationConfiguration(10)}/>
+            <Table columns={columns} dataSource={transactionsData} pagination={getPaginationConfiguration(10)} />
           </div>
         ) : (
-          <Analytics transactions={transactionsData} type={type}/>
+          <Analytics transactions={transactionsData} type={type} />
         )}
       </div>
 
