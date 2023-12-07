@@ -14,7 +14,7 @@ router.post("/add-transaction", async function (req, res) {
 
 router.post("/edit-transaction", async function (req, res) {
   try {
-    await Transaction.findOneAndUpdate({_id : req.body.transactionId} , req.body.payload)
+    await Transaction.findOneAndUpdate({ _id: req.body.transactionId }, req.body.payload)
     res.send("Transaction Updated Successfully");
   } catch (error) {
     res.status(500).json(error);
@@ -23,7 +23,7 @@ router.post("/edit-transaction", async function (req, res) {
 
 router.post("/delete-transaction", async function (req, res) {
   try {
-    await Transaction.findOneAndDelete({_id : req.body.transactionId})
+    await Transaction.findOneAndDelete({ _id: req.body.transactionId })
     res.send("Transaction Updated Successfully");
   } catch (error) {
     res.status(500).json(error);
@@ -31,26 +31,34 @@ router.post("/delete-transaction", async function (req, res) {
 });
 
 router.post("/get-all-transactions", async (req, res) => {
-  const { frequency, selectedRange , type } = req.body;
+  const { frequency, selectedRange, type } = req.body;
   try {
     const transactions = await Transaction.find({
       ...(frequency !== "custom"
         ? {
-            date: {
-              $gt: moment().subtract(Number(req.body.frequency), "d").toDate(),
-            },
-          }
+          date: {
+            $gt: moment().subtract(Number(req.body.frequency), "d").toDate(),
+          },
+        }
         : {
-            date: {
-              $gte: selectedRange[0],
-              $lte: selectedRange[1],
-            },
-          }),
+          date: {
+            $gte: selectedRange[0],
+            $lte: selectedRange[1],
+          },
+        }),
       userid: req.body.userid,
-      ...(type!=='all' && {type})
+      ...(type !== 'all' && { type })
     });
 
-    res.send(transactions);
+
+
+    // Mengonversi nilai amount ke dalam format dengan pemisah ribuan
+    const transactionsWithFormattedAmount = transactions.map(transaction => ({
+      ...transaction.toObject(),
+      amount: `${transaction.amount.toLocaleString()}`,
+    }));
+
+    res.send(transactionsWithFormattedAmount);
   } catch (error) {
     res.status(500).json(error);
   }

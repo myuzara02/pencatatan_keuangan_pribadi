@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, message, Modal, Select } from "antd";
+import { Form, Input, message, Modal, Select, InputNumber } from "antd";
 import Spinner from "./Spinner";
 import axios from "axios";
 import {
@@ -153,7 +153,17 @@ function AddEditTransaction({
       {loading && <Spinner />}
       <Form layout="vertical" className="transaction-form" onFinish={onFinish} initialValues={selectedItemForEdit} id="myForm">
         <Form.Item label="Amount" name="amount" id="value" value={value} onBlur={handleChange}>
-          <Input type="text" />
+          <InputNumber
+            style={{ width: '100%' }}
+            formatter={(value) => {
+              // Format nilai dengan pemisah ribuan, jutaan, dan seterusnya
+              return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+            }}
+            parser={(value) => {
+              // Hapus simbol dan pemisah ribuan sebelum menyimpan nilai
+              return value.replace(/Rp\s?|(,*)/g, '');
+            }}
+          />
         </Form.Item>
 
         <Form.Item label="Type" name="type">
