@@ -50,15 +50,7 @@ router.post("/get-all-transactions", async (req, res) => {
       ...(type !== 'all' && { type })
     });
 
-
-
-    // Mengonversi nilai amount ke dalam format dengan pemisah ribuan
-    const transactionsWithFormattedAmount = transactions.map(transaction => ({
-      ...transaction.toObject(),
-      amount: `${transaction.amount.toLocaleString()}`,
-    }));
-
-    res.send(transactionsWithFormattedAmount);
+    res.send(transactions);
   } catch (error) {
     res.status(500).json(error);
   }

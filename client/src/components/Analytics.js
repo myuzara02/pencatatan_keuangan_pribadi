@@ -22,15 +22,27 @@ function Analytics({ transactions, type }) {
       acc + (transaction.type === "income" ? transaction.amount : 0),
     0
   );
+
   const totalNetExpense = transactions.reduce(
     (acc, transaction) =>
       acc + (transaction.type === "expense" ? transaction.amount : 0),
     0
   );
-  const totalNetIncomePercentage = (totalNetIncome / totalNetExpense) * 100;
-  const totalNetExpensePercentage = (totalNetExpense / totalNetIncome) * 100;
 
+  // Total Net dengan pemisah ribuan
+  const totalNet = (totalNetIncome - totalNetExpense).toLocaleString("id-ID");
 
+  // Total Income dengan pemisah ribuan
+  const totalIncome = totalNetIncome.toLocaleString("id-ID");
+
+  // Total Expense dengan pemisah ribuan
+  const totalExpense = totalNetExpense.toLocaleString("id-ID");
+
+  // Menghindari pembagian dengan nol
+  const totalNetIncomePercentage =
+    totalNetExpense !== 0 ? (totalNetIncome / totalNetExpense) * 100 : 0;
+  const totalNetExpensePercentage =
+    totalNetIncome !== 0 ? (totalNetExpense / totalNetIncome) * 100 : 0;
 
   const totalTurnover = transactions.reduce(
     (acc, transaction) => acc + transaction.amount,
@@ -74,6 +86,11 @@ function Analytics({ transactions, type }) {
   const EmptyPlaceholder = ({ message }) => <div className="empty-placeholder">{message}</div>
 
   const capitalizeFirstLetter = (string) => string.charAt(0).toUpperCase() + string.slice(1);
+
+  const formatCurrency = (value) => {
+    // Format nilai dengan pemisah ribuan, jutaan, dan seterusnya
+    return value.toLocaleString();
+  };
 
   const CategoryWiseTransactionChart = ({ transactionType, totalTurnOver }) => {
     const incomeList = []
@@ -120,22 +137,22 @@ function Analytics({ transactions, type }) {
 
         <div className="col-md-4 mt-3">
           <div className="transactions-count">
-            <h4>Total Net : {totalNetIncome - totalNetExpense}</h4>
+            <h4>Total Net : {totalNet}</h4>
             <hr />
-            <h5>Income : {totalNetIncome}</h5>
-            <h5>Expense : {totalNetExpense}</h5>
+            <h5>Income : {totalIncome}</h5>
+            <h5>Expense : {totalExpense}</h5>
 
             <div className="progress-bars">
               <Progress
                 className="mx-5"
                 strokeColor="#5DD64F"
                 type="circle"
-                percent={totalIncomeTurnoverPercentage.toFixed(0)}
+                percent={totalNetIncomePercentage.toFixed(0)}
               />
               <Progress
                 strokeColor="#E5572F"
                 type="circle"
-                percent={totalExpenseTurnoverPercentage.toFixed(0)}
+                percent={totalNetExpensePercentage.toFixed(0)}
               />
             </div>
           </div>

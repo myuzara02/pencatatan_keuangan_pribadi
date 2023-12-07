@@ -25,6 +25,7 @@ function Home() {
   const [type, setType] = useState("all");
   const [selectedRange, setSelectedRange] = useState([]);
   const [viewType, setViewType] = useState("table");
+
   const getTransactions = async () => {
     try {
       const user = JSON.parse(localStorage.getItem("expense-tracker-user"));
